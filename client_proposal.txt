@@ -1,0 +1,127 @@
+TECHNICAL DESIGN
+================
+
+Architecture Overview
+--------------------
+We're building 3 main pieces that talk to each other:
+
+1. Web App (Frontend) - Where users type questions and see answers
+2. API Server (Backend) - Takes questions, talks to AI, runs database queries  
+3. AI Service - Converts English questions into SQL queries
+
+Flow: User types question → Web App → API Server → AI converts to SQL → Database → Results back to user
+
+The web app sends questions to our API server. The API server asks OpenAI to turn the question into a SQL query. Then it runs that query on your database and sends the results back to show the user.
+
+Technologies Used
+-----------------
+Web App:
+- React with TypeScript - because it's reliable and everyone knows it
+- Some CSS framework for making it look decent
+
+API Server:
+- Python with FastAPI - fast to build, easy to debug
+- LangGraph - keeps the AI workflow organized and safe
+- SQLAlchemy - talks to databases without breaking things
+
+AI Part:
+- OpenAI GPT-4 - best at understanding questions and writing SQL
+- Custom prompts - so it generates good queries for your specific data
+
+Database:
+- Your existing SQL Server - we just connect to it, don't change anything
+- Read-only access - can't accidentally mess up your data
+
+Deployment Plan
+---------------
+Where it runs:
+- Azure App Service - easy to deploy, scales automatically
+- Your existing SQL Server - no changes needed
+
+Development setup:
+- Basic App Service instance
+- Azure Key Vault for API keys
+- Connection to a test database
+
+Production setup:
+- Bigger App Service that can handle more users
+- Proper monitoring so we know if something breaks
+- Azure AD login so only your people can use it
+- Load balancer if lots of people use it at once
+
+Getting code deployed:
+- Azure DevOps for storing code and running tests
+- Terraform scripts to set up all the Azure stuff consistently
+- Automatic deployment when we push new code
+
+Security stuff:
+- All connections encrypted
+- API keys stored securely in Key Vault
+- Database access is read-only
+- Users log in through your existing Azure AD
+
+
+PROJECT PLANNING
+================
+
+Team Structure (2.5 FTE)
+------------------------
+- Backend Developer: 1.0 FTE - API, AI integration, database connections
+- Frontend Developer: 1.0 FTE - React UI, data visualization  
+- Infrastructure Engineer: 0.5 FTE - Azure setup, CI/CD, deployment
+
+Work Breakdown
+--------------
+Pre-work (5 person-days)
+- Requirements gathering - 1 FTE
+  - Session requirements vs single queries
+  - Database inventory and user access needs
+  - Question patterns and complexity analysis
+
+Infrastructure Stream (0.5 FTE - 12 person-days)
+1. Initial setup - 3 PDs
+   - Azure DevOps project setup
+   - App Service, Key Vault, networking
+2. Deployment support - 2 PDs (during development)
+3. Production deployment - 7 PDs
+   - Final infrastructure, monitoring, security
+
+Backend Stream (1.0 FTE - 25 person-days)
+1. Database connections - 3 PDs
+   - Connection setup per database
+   - Query safety and validation
+2. AI framework - 22 PDs
+   - FastAPI application structure
+   - LangGraph workflow implementation
+   - OpenAI integration and prompt engineering
+   - Query generation and execution
+
+Frontend Stream (1.0 FTE - 18 person-days)
+1. UI design - 3 PDs
+   - Wireframes and user flow
+2. Development - 15 PDs
+   - React application with TypeScript
+   - Chat interface and result visualization
+   - Data export and query history
+   - Responsive design and testing
+
+Development Timeline
+-------------------
+Week 1-2: Foundation (10 PDs)
+- Pre-work requirements gathering (5 PDs)
+- Infrastructure setup (3 PDs) 
+- Backend/Frontend project initialization (2 PDs parallel)
+
+Week 3-6: Core Development (37 PDs parallel)
+- Backend development (22 PDs)
+- Frontend development (15 PDs)
+- Infrastructure support as needed
+
+Week 7-8: Deployment & Testing (13 PDs)
+- Production deployment (7 PDs infrastructure)
+- User acceptance testing (3 PDs)
+- Bug fixes and optimization (3 PDs)
+
+Total: 60 person-days over 8 weeks
+
+
